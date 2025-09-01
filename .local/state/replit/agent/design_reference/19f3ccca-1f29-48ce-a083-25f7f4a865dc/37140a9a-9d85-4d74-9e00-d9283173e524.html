@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-First Tasks Management Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    'sans': ['Inter', 'system-ui', 'sans-serif'],
+                },
+                colors: {
+                    primary: '#6366F1',
+                    secondary: '#8B5CF6',
+                    accent: '#10B981',
+                }
+            }
+        }
+    };
+    </script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- @COMPONENT: AppLayout [main application layout] -->
+    <div class="min-h-screen flex">
+        <!-- @COMPONENT: Sidebar [navigation and workspace management] -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Workspace Selector -->
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-semibold text-gray-900">Workspace</h2>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-cog text-sm"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <select class="w-full p-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option data-bind="workspace.name">Personal Workspace</option>
+                        <option data-bind="workspace.name">Team Alpha</option>
+                        <option data-bind="workspace.name">Project Beta</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Navigation Sections -->
+            <nav class="flex-1 overflow-y-auto">
+                <!-- View Navigation -->
+                <div class="p-4">
+                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Views</h3>
+                    <ul class="space-y-1">
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-primary bg-primary/10 rounded-lg"><i class="fas fa-calendar-day w-5 mr-3"></i>Day View</a></li>
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-calendar-week w-5 mr-3"></i>Week View</a></li>
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-calendar-alt w-5 mr-3"></i>Month View</a></li>
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-project-diagram w-5 mr-3"></i>Project View</a></li>
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-tags w-5 mr-3"></i>Category View</a></li>
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-calendar w-5 mr-3"></i>Calendar View</a></li>
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-comments w-5 mr-3"></i>Chat View</a></li>
+                        <li><a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-folder w-5 mr-3"></i>Vault</a></li>
+                    </ul>
+                </div>
+
+                <!-- Members Section -->
+                <div class="p-4 border-t border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Members</h3>
+                        <button class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-plus text-sm"></i>
+                        </button>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs mr-2">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="text-sm text-gray-700" data-bind="user.name">You</span>
+                            <span class="ml-auto w-2 h-2 bg-green-400 rounded-full"></span>
+                        </li>
+                        <li class="flex items-center">
+                            <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs mr-2">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <span class="text-sm text-gray-700" data-bind="agent.name">AI Assistant</span>
+                            <span class="ml-auto w-2 h-2 bg-green-400 rounded-full"></span>
+                        </li>
+                        <!-- @MAP: members.map(member => ( -->
+                        <li class="flex items-center" data-mock="true">
+                            <div class="w-6 h-6 bg-secondary rounded-full flex items-center justify-center text-white text-xs mr-2">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="text-sm text-gray-700">Team Member</span>
+                            <span class="ml-auto w-2 h-2 bg-gray-300 rounded-full"></span>
+                        </li>
+                        <!-- @END_MAP )) -->
+                    </ul>
+                </div>
+
+                <!-- Projects Section -->
+                <div class="p-4 border-t border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Projects</h3>
+                        <button class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-plus text-sm"></i>
+                        </button>
+                    </div>
+                    <!-- @MAP: projects.map(project => ( -->
+                    <div class="space-y-1">
+                        <div>
+                            <button class="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">
+                                <i class="fas fa-chevron-down w-3 mr-2"></i>
+                                <i class="fas fa-folder text-primary mr-2"></i>
+                                <span data-bind="project.name">Website Redesign</span>
+                            </button>
+                            <div class="ml-5 space-y-1">
+                                <a href="#" class="flex items-center px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">
+                                    <i class="fas fa-chart-bar w-4 mr-2"></i>Dashboard
+                                </a>
+                                <a href="#" class="flex items-center px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">
+                                    <i class="fas fa-tasks w-4 mr-2"></i>Tasks
+                                </a>
+                                <a href="#" class="flex items-center px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">
+                                    <i class="fas fa-dollar-sign w-4 mr-2"></i>Financials
+                                </a>
+                                <a href="#" class="flex items-center px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">
+                                    <i class="fas fa-folder w-4 mr-2"></i>Vault
+                                </a>
+                                <a href="#" class="flex items-center px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">
+                                    <i class="fas fa-comments w-4 mr-2"></i>Chat
+                                </a>
+                                <div>
+                                    <button class="flex items-center px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg w-full">
+                                        <i class="fas fa-chevron-down w-3 mr-2"></i>
+                                        <i class="fas fa-file-alt w-4 mr-2"></i>Pages
+                                    </button>
+                                    <div class="ml-5 space-y-1">
+                                        <a href="#" class="flex items-center px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-lg">
+                                            <i class="fas fa-file w-3 mr-2"></i>Requirements
+                                        </a>
+                                        <a href="#" class="flex items-center px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-lg">
+                                            <i class="fas fa-file w-3 mr-2"></i>Design Brief
+                                        </a>
+                                        <button class="flex items-center px-3 py-1 text-sm text-gray-400 hover:bg-gray-100 rounded-lg w-full">
+                                            <i class="fas fa-plus w-3 mr-2"></i>Add New Page
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </nav>
+        </aside>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: MainContent [primary dashboard area] -->
+        <main class="flex-1 flex flex-col">
+            <!-- @COMPONENT: TopHeader [workspace controls and user menu] -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="text-lg font-semibold text-gray-900">AI-First Dashboard</h1>
+                        <div class="flex space-x-1">
+                            <button class="px-3 py-1 text-sm font-medium text-primary bg-primary/10 rounded-lg">Day</button>
+                            <button class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Week</button>
+                            <button class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Month</button>
+                            <button class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Project</button>
+                            <button class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Category</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="p-2 text-gray-400 hover:text-gray-600 relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                        </button>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700" data-bind="user.name">John Doe</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: TopHeader -->
+
+            <!-- @COMPONENT: DashboardContent [main dashboard layout] -->
+            <div class="flex-1 flex">
+                <!-- Main Dashboard Area -->
+                <div class="flex-1 p-6">
+                    <!-- AI Chat Interface - Prominent Central Feature -->
+                    <div class="mb-8">
+                        <!-- @COMPONENT: AIChatInterface [natural language interaction] -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center text-white mr-3">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <h2 class="text-lg font-semibold text-gray-900">AI Assistant</h2>
+                            </div>
+                            
+                            <!-- Chat Input Area -->
+                            <div class="relative mb-4">
+                                <textarea 
+                                    class="w-full p-4 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                    rows="3" 
+                                    placeholder="Ask or find anything from your workspace... Try 'Show me overdue tasks' or 'Create a new project for client onboarding'"
+                                    data-implementation="Should handle natural language processing and provide intelligent responses"
+                                ></textarea>
+                                <div class="absolute bottom-3 right-3 flex space-x-2">
+                                    <button class="p-2 text-gray-400 hover:text-primary">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                    <button class="p-2 bg-primary text-white rounded-lg hover:bg-primary/90" data-event="click:handleAIQuery" data-implementation="Should process AI query and update interface accordingly">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Suggested Actions -->
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <button class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200">📊 Show project overview</button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200">⚡ Create quick task</button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200">📅 Schedule meeting</button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200">💡 Get insights</button>
+                            </div>
+
+                            <!-- Chat History Preview -->
+                            <div class="border-t border-gray-100 pt-4">
+                                <div class="text-sm text-gray-500 mb-2">Recent conversation:</div>
+                                <div class="space-y-2" data-mock="true">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                                        <strong>You:</strong> What tasks are due today?
+                                    </div>
+                                    <div class="p-3 bg-primary/5 rounded-lg text-sm">
+                                        <strong>AI:</strong> You have 3 tasks due today: Website wireframes, Client presentation, and Budget review. Would you like me to prioritize them?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: AIChatInterface -->
+                    </div>
+
+                    <!-- Dashboard Grid - Three Column Layout -->
+                    <div class="grid lg:grid-cols-3 gap-6">
+                        <!-- @COMPONENT: RecentProjectsCard [project overview] -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Recent Projects</h3>
+                                <a href="#" class="text-sm text-primary hover:text-primary/80">View All</a>
+                            </div>
+                            <div class="space-y-3">
+                                <!-- @MAP: recentProjects.map(project => ( -->
+                                <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white mr-3">
+                                        <i class="fas fa-folder"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900" data-bind="project.name">Website Redesign</h4>
+                                        <p class="text-xs text-gray-500" data-bind="project.lastModified">Updated 2 hours ago</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 65%" data-bind="project.progress"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500">65%</span>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                                <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer" data-mock="true">
+                                    <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center text-white mr-3">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900">Mobile App</h4>
+                                        <p class="text-xs text-gray-500">Updated 1 day ago</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-secondary h-2 rounded-full" style="width: 40%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500">40%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: RecentProjectsCard -->
+
+                        <!-- @COMPONENT: UpcomingTasksCard [task priorities] -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Upcoming Tasks</h3>
+                                <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">3 overdue</span>
+                            </div>
+                            <div class="space-y-3">
+                                <!-- @MAP: upcomingTasks.map(task => ( -->
+                                <div class="flex items-center group">
+                                    <input type="checkbox" class="w-4 h-4 text-primary rounded mr-3 focus:ring-primary" data-event="change:handleTaskComplete" data-implementation="Should update task status">
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900" data-bind="task.title">Finish wireframes</h4>
+                                        <div class="flex items-center text-xs text-gray-500">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <span data-bind="task.dueTime">Due in 2 hours</span>
+                                            <span class="mx-2">•</span>
+                                            <span class="px-2 py-1 bg-primary/10 text-primary rounded" data-bind="task.project">Website</span>
+                                        </div>
+                                    </div>
+                                    <div class="opacity-0 group-hover:opacity-100 flex space-x-1">
+                                        <button class="p-1 text-gray-400 hover:text-primary">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </button>
+                                        <button class="p-1 text-gray-400 hover:text-amber-500">
+                                            <i class="fas fa-clock text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                                <div class="flex items-center group" data-mock="true">
+                                    <input type="checkbox" class="w-4 h-4 text-primary rounded mr-3 focus:ring-primary">
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-red-600">Client presentation</h4>
+                                        <div class="flex items-center text-xs text-gray-500">
+                                            <i class="fas fa-exclamation-triangle text-red-500 mr-1"></i>
+                                            <span class="text-red-500">Overdue by 1 day</span>
+                                            <span class="mx-2">•</span>
+                                            <span class="px-2 py-1 bg-secondary/10 text-secondary rounded">Mobile App</span>
+                                        </div>
+                                    </div>
+                                    <div class="opacity-0 group-hover:opacity-100 flex space-x-1">
+                                        <button class="p-1 text-gray-400 hover:text-primary">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </button>
+                                        <button class="p-1 text-gray-400 hover:text-amber-500">
+                                            <i class="fas fa-clock text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex items-center group" data-mock="true">
+                                    <input type="checkbox" class="w-4 h-4 text-primary rounded mr-3 focus:ring-primary">
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900">Budget review</h4>
+                                        <div class="flex items-center text-xs text-gray-500">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <span>Due tomorrow</span>
+                                            <span class="mx-2">•</span>
+                                            <span class="px-2 py-1 bg-accent/10 text-accent rounded">Finance</span>
+                                        </div>
+                                    </div>
+                                    <div class="opacity-0 group-hover:opacity-100 flex space-x-1">
+                                        <button class="p-1 text-gray-400 hover:text-primary">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </button>
+                                        <button class="p-1 text-gray-400 hover:text-amber-500">
+                                            <i class="fas fa-clock text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: UpcomingTasksCard -->
+
+                        <!-- @COMPONENT: QuickAccessCard [action shortcuts] -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Access</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center group" data-event="click:handleCreateTask" data-implementation="Should open task creation modal">
+                                    <i class="fas fa-plus text-primary text-lg mb-2 group-hover:scale-110 transition-transform"></i>
+                                    <div class="text-sm font-medium text-gray-900">Create Task</div>
+                                </button>
+                                <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center group" data-event="click:handleNewProject" data-implementation="Should open project creation modal">
+                                    <i class="fas fa-folder-plus text-secondary text-lg mb-2 group-hover:scale-110 transition-transform"></i>
+                                    <div class="text-sm font-medium text-gray-900">New Project</div>
+                                </button>
+                                <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center group" data-event="click:handleViewCalendar" data-implementation="Should navigate to calendar view">
+                                    <i class="fas fa-calendar text-accent text-lg mb-2 group-hover:scale-110 transition-transform"></i>
+                                    <div class="text-sm font-medium text-gray-900">Calendar</div>
+                                </button>
+                                <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center group" data-event="click:handleViewReports" data-implementation="Should navigate to reports view">
+                                    <i class="fas fa-chart-bar text-yellow-500 text-lg mb-2 group-hover:scale-110 transition-transform"></i>
+                                    <div class="text-sm font-medium text-gray-900">Reports</div>
+                                </button>
+                                <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center group" data-event="click:handleSettings" data-implementation="Should open settings modal">
+                                    <i class="fas fa-cog text-gray-500 text-lg mb-2 group-hover:scale-110 transition-transform"></i>
+                                    <div class="text-sm font-medium text-gray-900">Settings</div>
+                                </button>
+                                <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center group" data-event="click:handleFileVault" data-implementation="Should navigate to file vault">
+                                    <i class="fas fa-folder text-purple-500 text-lg mb-2 group-hover:scale-110 transition-transform"></i>
+                                    <div class="text-sm font-medium text-gray-900">File Vault</div>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: QuickAccessCard -->
+                    </div>
+
+                    <!-- Time Slots Grid - Day View Implementation -->
+                    <div class="mt-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Today's Schedule</h2>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary/90" data-event="click:handleAddTask" data-implementation="Should open task creation modal">
+                                    <i class="fas fa-plus mr-1"></i>Add Task
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- @COMPONENT: TimeSlotGrid [3-hour interval task organization] -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Time Slot Cards -->
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">3:00 - 6:00 AM</h3>
+                                    <span class="text-xs text-gray-500">Early Morning</span>
+                                </div>
+                                <div class="space-y-2" data-implementation="Should support drag-and-drop from brain dump">
+                                    <div class="p-2 bg-gray-50 rounded border-l-4 border-gray-300 text-sm text-gray-500" data-mock="true">
+                                        Drop tasks here or click to add
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">6:00 - 9:00 AM</h3>
+                                    <span class="text-xs text-gray-500">Morning</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <!-- Task Card Example -->
+                                    <div class="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded mr-2" data-event="change:handleTaskComplete">
+                                            <span class="text-sm font-medium text-gray-900 flex-1" data-bind="task.title">Morning workout</span>
+                                            <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 text-xs text-gray-500">
+                                            <span class="px-2 py-1 bg-accent/10 text-accent rounded">Health</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">9:00 - 12:00 PM</h3>
+                                    <span class="text-xs text-gray-500">Late Morning</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-secondary/5 border border-secondary/20 rounded-lg" data-mock="true">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded mr-2">
+                                            <span class="text-sm font-medium text-gray-900 flex-1">Team standup</span>
+                                            <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-robot"></i>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 text-xs text-gray-500">
+                                            <span class="px-2 py-1 bg-primary/10 text-primary rounded">Website</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg" data-mock="true">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded mr-2">
+                                            <span class="text-sm font-medium text-gray-900 flex-1">Design review</span>
+                                            <div class="w-6 h-6 bg-secondary rounded-full flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 text-xs text-gray-500">
+                                            <span class="px-2 py-1 bg-secondary/10 text-secondary rounded">Mobile App</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">12:00 - 3:00 PM</h3>
+                                    <span class="text-xs text-gray-500">Afternoon</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="p-2 bg-gray-50 rounded border-l-4 border-gray-300 text-sm text-gray-500" data-mock="true">
+                                        Lunch break
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional time slots -->
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]" data-mock="true">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">3:00 - 6:00 PM</h3>
+                                    <span class="text-xs text-gray-500">Late Afternoon</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="p-2 bg-gray-50 rounded border-l-4 border-gray-300 text-sm text-gray-500">
+                                        Available for tasks
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]" data-mock="true">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">6:00 - 9:00 PM</h3>
+                                    <span class="text-xs text-gray-500">Evening</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="p-2 bg-gray-50 rounded border-l-4 border-gray-300 text-sm text-gray-500">
+                                        Personal time
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]" data-mock="true">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">9:00 - 12:00 AM</h3>
+                                    <span class="text-xs text-gray-500">Late Evening</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="p-2 bg-gray-50 rounded border-l-4 border-gray-300 text-sm text-gray-500">
+                                        Wind down
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 min-h-[200px]" data-mock="true">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-900">12:00 - 3:00 AM</h3>
+                                    <span class="text-xs text-gray-500">Night</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="p-2 bg-gray-50 rounded border-l-4 border-gray-300 text-sm text-gray-500">
+                                        Sleep
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: TimeSlotGrid -->
+                    </div>
+                </div>
+
+                <!-- @COMPONENT: RightPanel [contextual information and brain dump] -->
+                <aside class="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+                    <!-- @STATE: rightPanelCollapsed:boolean = false -->
+                    
+                    <!-- Due Today Section -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Due Today</h3>
+                            <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">5 items</span>
+                        </div>
+                        <div class="space-y-3">
+                            <!-- @MAP: dueTodayTasks.map(task => ( -->
+                            <div class="flex items-center p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <input type="checkbox" class="w-4 h-4 text-primary rounded mr-3" data-event="change:handleTaskComplete">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-gray-900" data-bind="task.title">Finish wireframes</h4>
+                                    <p class="text-xs text-red-600">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        <span data-bind="task.timeRemaining">2 hours left</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                            <div class="flex items-center p-3 bg-red-50 border border-red-200 rounded-lg" data-mock="true">
+                                <input type="checkbox" class="w-4 h-4 text-primary rounded mr-3">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-gray-900">Client call prep</h4>
+                                    <p class="text-xs text-red-600">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                        Overdue by 30 mins
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top 3 Priorities Section -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Top 3 Priorities</h3>
+                            <button class="text-sm text-primary hover:text-primary/80" data-event="click:handleEditPriorities" data-implementation="Should allow reordering priorities">Edit</button>
+                        </div>
+                        <div class="space-y-3">
+                            <!-- @MAP: topPriorities.map((priority, index) => ( -->
+                            <div class="flex items-center p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                                <div class="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                    1
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-gray-900" data-bind="priority.title">Complete user research</h4>
+                                    <p class="text-xs text-gray-500" data-bind="priority.project">Website Redesign</p>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                            <div class="flex items-center p-3 bg-secondary/5 border border-secondary/20 rounded-lg" data-mock="true">
+                                <div class="w-6 h-6 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                    2
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-gray-900">Finalize budget</h4>
+                                    <p class="text-xs text-gray-500">Mobile App</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 bg-accent/5 border border-accent/20 rounded-lg" data-mock="true">
+                                <div class="w-6 h-6 bg-accent text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                    3
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-gray-900">Team retrospective</h4>
+                                    <p class="text-xs text-gray-500">General</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brain Dump Section -->
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Brain Dump</h3>
+                            <button class="text-sm text-gray-500 hover:text-gray-700" data-event="click:handleClearBrainDump" data-implementation="Should clear all brain dump items">Clear</button>
+                        </div>
+                        
+                        <!-- @COMPONENT: BrainDumpInput [quick idea capture] -->
+                        <div class="mb-4">
+                            <div class="flex">
+                                <input 
+                                    type="text" 
+                                    placeholder="Quick thoughts, ideas, or tasks..." 
+                                    class="flex-1 p-2 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                                    data-event="keypress:handleBrainDumpAdd"
+                                    data-implementation="Should add item on enter key"
+                                >
+                                <button class="px-3 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90" data-event="click:handleBrainDumpAdd" data-implementation="Should add item to brain dump list">
+                                    <i class="fas fa-plus text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: BrainDumpInput -->
+
+                        <!-- @COMPONENT: BrainDumpList [draggable ideas] -->
+                        <div class="space-y-2" data-implementation="Items should be draggable to time slots">
+                            <!-- @MAP: brainDumpItems.map(item => ( -->
+                            <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 cursor-move hover:bg-gray-100 group" draggable="true" data-bind="item.id">
+                                <i class="fas fa-grip-vertical text-gray-400 mr-2 group-hover:text-gray-600"></i>
+                                <span class="flex-1 text-sm text-gray-700" data-bind="item.text">Research competitor pricing</span>
+                                <button class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500" data-event="click:handleRemoveBrainDumpItem" data-implementation="Should remove item from list">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </div>
+                            <!-- @END_MAP )) -->
+                            <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 cursor-move hover:bg-gray-100 group" draggable="true" data-mock="true">
+                                <i class="fas fa-grip-vertical text-gray-400 mr-2 group-hover:text-gray-600"></i>
+                                <span class="flex-1 text-sm text-gray-700">Call dentist for appointment</span>
+                                <button class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 cursor-move hover:bg-gray-100 group" draggable="true" data-mock="true">
+                                <i class="fas fa-grip-vertical text-gray-400 mr-2 group-hover:text-gray-600"></i>
+                                <span class="flex-1 text-sm text-gray-700">Update portfolio website</span>
+                                <button class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 cursor-move hover:bg-gray-100 group" draggable="true" data-mock="true">
+                                <i class="fas fa-grip-vertical text-gray-400 mr-2 group-hover:text-gray-600"></i>
+                                <span class="flex-1 text-sm text-gray-700">Organize team building event</span>
+                                <button class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: BrainDumpList -->
+
+                        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center text-sm text-blue-800">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                <span>Drag items to time slots to convert to tasks</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                <!-- @END_COMPONENT: RightPanel -->
+            </div>
+            <!-- @END_COMPONENT: DashboardContent -->
+        </main>
+        <!-- @END_COMPONENT: MainContent -->
+    </div>
+    <!-- @END_COMPONENT: AppLayout -->
+
+    <script>
+    // TODO: Implement business logic, API calls, or state management
+    (function() {
+        // Encapsulated functionality for interactive elements
+        
+        // Handle task completion
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                // TODO: Update task status in backend
+                console.log('Task completion toggled');
+            }
+        });
+
+        // Handle brain dump input
+        document.addEventListener('keypress', function(e) {
+            if (e.target.placeholder && e.target.placeholder.includes('Quick thoughts') && e.key === 'Enter') {
+                // TODO: Add item to brain dump list
+                console.log('Brain dump item added:', e.target.value);
+                e.target.value = '';
+            }
+        });
+
+        // Handle drag and drop simulation
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.draggable) {
+                console.log('Drag started for:', e.target.textContent.trim());
+                // TODO: Implement drag and drop functionality
+            }
+        });
+
+        // Handle button clicks with data-event attributes
+        document.addEventListener('click', function(e) {
+            const eventAttr = e.target.closest('[data-event]')?.getAttribute('data-event');
+            if (eventAttr) {
+                const [event, handler] = eventAttr.split(':');
+                console.log(`${handler} called`);
+                // TODO: Implement specific handler logic
+            }
+        });
+
+        // Initialize tooltips and interactive states
+        console.log('AI-First Tasks Management Platform initialized');
+    })();
+    </script>
+</body>
+</html>
