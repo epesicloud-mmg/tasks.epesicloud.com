@@ -320,11 +320,15 @@ export class DatabaseStorage implements IStorage {
 
   // Workspace operations
   async getUserWorkspaces(userId: string): Promise<Workspace[]> {
+    console.log(`DEBUG: getUserWorkspaces called for userId: ${userId}`);
+    
     // Get workspaces owned by user and workspaces where user is a member
     const ownedWorkspaces = await db
       .select()
       .from(workspaces)
       .where(eq(workspaces.ownerId, userId));
+    
+    console.log(`DEBUG: Found ${ownedWorkspaces.length} owned workspaces:`, ownedWorkspaces.map(w => ({ id: w.id, name: w.name })));
 
     const memberWorkspaces = await db
       .select({
@@ -342,12 +346,17 @@ export class DatabaseStorage implements IStorage {
         eq(workspaceMembers.isActive, true)
       ));
 
+    console.log(`DEBUG: Found ${memberWorkspaces.length} member workspaces:`, memberWorkspaces.map(w => ({ id: w.id, name: w.name })));
+
     // Combine and deduplicate
     const allWorkspaces = [...ownedWorkspaces, ...memberWorkspaces];
+    console.log(`DEBUG: Combined workspaces before dedup: ${allWorkspaces.length}`);
+    
     const uniqueWorkspaces = allWorkspaces.filter((workspace, index, self) => 
       index === self.findIndex(w => w.id === workspace.id)
     );
 
+    console.log(`DEBUG: Final unique workspaces: ${uniqueWorkspaces.length}`, uniqueWorkspaces.map(w => ({ id: w.id, name: w.name })));
     return uniqueWorkspaces;
   }
 
