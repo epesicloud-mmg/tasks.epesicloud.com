@@ -103,7 +103,7 @@ export const taskRecurrences = pgTable("task_recurrences", {
   recurrenceType: varchar("recurrence_type", { length: 20 }).notNull(), // 'daily', 'weekly', 'monthly', 'yearly', 'custom'
   recurrencePattern: jsonb("recurrence_pattern").notNull(), // Flexible pattern storage
   interval: integer("interval").default(1), // e.g., every 2 days, every 3 weeks
-  daysOfWeek: varchar("days_of_week", { length: 20 }), // e.g., "1,3,5" for Mon, Wed, Fri
+  daysOfWeek: varchar("days_of_week", { length: 100 }), // e.g., "monday,wednesday,friday" for full day names
   dayOfMonth: integer("day_of_month"), // e.g., 15 for 15th of each month
   weekOfMonth: integer("week_of_month"), // e.g., 1 for first week, -1 for last week
   monthOfYear: integer("month_of_year"), // e.g., 1 for January, 12 for December
