@@ -728,7 +728,7 @@ export class DatabaseStorage implements IStorage {
       } else {
         const existing = conversationMap.get(conv.conversationId);
         existing.messageCount += 1;
-        if (conv.createdAt > existing.lastActivity) {
+        if (conv.createdAt && existing.lastActivity && conv.createdAt > existing.lastActivity) {
           existing.lastActivity = conv.createdAt;
           existing.lastMessage = conv.message;
         }
